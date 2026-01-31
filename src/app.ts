@@ -6,6 +6,7 @@
   import admin from "./routes/adminRoutes";
   import products from "./routes/productRoutes";
   import cart from "./routes/cartRoutes";
+  import uploadRoutes from "./routes/upload";
   const app = express();
 
   app.use(express.json());
@@ -22,6 +23,7 @@
   app.use("/products", products);
   app.use("/cart", cart);
 
+app.use("/api", uploadRoutes);
   export default app;
 
 
