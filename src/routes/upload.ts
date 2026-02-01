@@ -1,24 +1,29 @@
-import express from "express";
-import upload from "../middleware/upload";
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary";
 
-const router = express.Router();
-router.get("/upload", (req, res) => {
-try {
-    res.send("UPLOAD ROUTE WORKS");
-} catch (error) {
-  console.log(error)
+const isProduction = process.env.NODE_ENV === "production";
+
+let storage;
+
+if (isProduction) {
+  storage = new CloudinaryStorage({
+    cloudinary,
+    params: async () => ({
+      folder: "products",
+      allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    }),
+  });
+} else {
+  storage = multer.diskStorage({
+    destination: "uploads/",
+    filename: (req, file, cb) => {
+      const uniqueName = Date.now() + "-" + file.originalname;
+      cb(null, uniqueName);
+    },
+  });
 }
-});
 
-router.post(
-  "/upload",
-  upload.single("image"),
-  (req, res) => {
-    res.json({
-      message: "Image uploaded",
-      url: req.file?.path, 
-    });
-  }
-);
+const upload = multer({ storage });
 
-export default router;
+export default upload;
