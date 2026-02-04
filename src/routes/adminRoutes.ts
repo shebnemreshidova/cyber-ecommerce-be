@@ -30,15 +30,14 @@ router.post(
       if (!name || !price || !order || !description || !file) {
         return res.status(400).json({ message: "All fields are required" });
       }
-const imagePath = file.path.replace(/\\/g, "/");
+      const imagePath = file.path.replace(/\\/g, "/");
 
       const product = {
         name,
         price: Number(price),
         order: Number(order),
         description,
-        image: imagePath, 
-                          
+        image: imagePath,
         createdAt: new Date(),
       };
 

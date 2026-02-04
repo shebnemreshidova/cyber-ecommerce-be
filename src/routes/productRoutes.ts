@@ -16,9 +16,42 @@ interface AuthRequest extends Request {
 router.get("/all", async (req, res) => {
     try {
         const db = Database.getDb();
-        const products = await db.collection("products").find().toArray();
-        return res.status(200).json(products);
+
+        const {
+            query,
+            category,
+            page = "1",
+            limit = "10",
+        } = req.query;
+        const filter: any = {};
+
+        if (category) {
+            filter.category = category;
+        }
+        if (query) {
+            filter.name = { $regex: query, $options: "i" };
+        }
+
+        const pageNumber = Number(page);
+        const limitNumber = Number(limit);
+        const skip = (pageNumber - 1) * limitNumber;
+
+        const products = await db.collection("products").find(filter).skip(skip).limit(limitNumber).toArray();
+        const total = await db
+            .collection("products")
+            .countDocuments(filter);
+
+        return res.status(200).json({
+            products,
+            pagination: {
+                page: pageNumber,
+                limit: limitNumber,
+                total,
+                totalPages: Math.ceil(total / limitNumber),
+            },
+        });
     } catch (error) {
+        console.error(error)
         return res.status(500).json({ message: "Server Error" });
     }
 });
