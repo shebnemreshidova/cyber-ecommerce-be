@@ -18,28 +18,39 @@ router.get("/all", async (req, res) => {
         const db = Database.getDb();
 
         const {
+            filter,
             query,
             category,
             page = "1",
             limit = "10",
         } = req.query;
-        const filter: any = {};
+        const filterObj: any = {};
 
         if (category) {
-            filter.category = category;
+            filterObj.category = category;
         }
         if (query) {
-            filter.name = { $regex: query, $options: "i" };
+            filterObj.name = { $regex: query, $options: "i" };
         }
 
         const pageNumber = Number(page);
         const limitNumber = Number(limit);
         const skip = (pageNumber - 1) * limitNumber;
 
-        const products = await db.collection("products").find(filter).skip(skip).limit(limitNumber).toArray();
+        let sort = {};
+        if (filter === 'new-arrival') {
+            sort = { createdAt: -1 }
+        } else if (filter === 'bestseller') {
+            sort = { sold: -1 }
+        } else if (filter === 'featured-products') {
+            sort = { featured: -1 }
+        }
+
+
+        const products = await db.collection("products").find(filterObj).sort(sort).skip(skip).limit(limitNumber).toArray();
         const total = await db
             .collection("products")
-            .countDocuments(filter);
+            .countDocuments(filterObj);
 
         return res.status(200).json({
             products,
