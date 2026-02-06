@@ -7,9 +7,7 @@ import { Request } from 'express';
 const router = express.Router();
 const authMiddleware = auth();
 
-
-
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
     user?: { _id: string; email: string };
 }
 
@@ -45,8 +43,6 @@ router.get("/all", async (req, res) => {
         } else if (filter === 'featured-products') {
             sort = { featured: -1 }
         }
-
-
         const products = await db.collection("products").find(filterObj).sort(sort).skip(skip).limit(limitNumber).toArray();
         const total = await db
             .collection("products")
@@ -80,6 +76,7 @@ router.get("/wishlist/all", authMiddleware.authenticate(), async (req: AuthReque
         const productIds = wishlistDocs.map(
             (item) => new ObjectId(item.productId)
         );
+        //  await new Promise(resolve => setTimeout(resolve, 3000));
 
         const products = await db
             .collection("products")
@@ -132,8 +129,6 @@ router.post(
     }
 );
 
-
-
 router.post("/sync-wishlist", authMiddleware.authenticate(), async (req: AuthRequest, res) => {
     try {
         const userId = req.user?._id;
@@ -157,6 +152,17 @@ router.post("/sync-wishlist", authMiddleware.authenticate(), async (req: AuthReq
     } catch (error) {
         return res.status(500).json({ message: "Server Error" });
 
+    }
+});
+
+router.get("/details/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const db = Database.getDb();
+        const productDetail = await db.collection("products").findOne({ _id: new ObjectId(id) });
+        return res.status(200).json(productDetail);
+    } catch (error) {
+        return res.status(500).json({ message: "Server Error" });
     }
 });
 

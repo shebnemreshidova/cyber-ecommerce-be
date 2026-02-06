@@ -11,6 +11,7 @@ const authMiddleware = auth();
 interface AuthRequest extends Request {
     user?: { _id: string; email: string };
 }
+
 router.get("/all", authMiddleware.authenticate(), async (req: AuthRequest, res) => {
     try {
         const db = Database.getDb();
@@ -46,7 +47,6 @@ router.get("/all", authMiddleware.authenticate(), async (req: AuthRequest, res) 
 
     }
 });
-
 
 router.post("/add", authMiddleware.authenticate(), async (req: AuthRequest, res) => {
     try {
@@ -95,6 +95,7 @@ router.delete("/remove", authMiddleware.authenticate(), async (req: AuthRequest,
         res.status(500).json({ message: "Server Error" });
     }
 })
+
 router.post("/decrease", authMiddleware.authenticate(), async (req: AuthRequest, res) => {
     try {
         const db = Database.getDb();

@@ -4,6 +4,7 @@ import Database from '../db/Database';
 const bcrypt = require('bcrypt');
 const config = require('../config');
 import jwt from 'jwt-simple';
+
 router.post('/register', async (req, res) => {
     try {
         const db = Database.getDb();
@@ -26,6 +27,7 @@ router.post('/register', async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 })
+
 router.post('/login', async (req, res) => {
     try {
         const db = Database.getDb();

@@ -7,6 +7,8 @@ import admin from "./routes/adminRoutes";
 import products from "./routes/productRoutes";
 import cart from "./routes/cartRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
+import payment from "./routes/payment";
+
 const app = express();
 
 app.use(express.json());
@@ -24,6 +26,7 @@ app.use("/admin", admin);
 app.use("/products", products);
 app.use("/cart", cart);
 app.use("/category", categoryRoutes);
+app.use("/payment", payment);
 export default app;
 
 
